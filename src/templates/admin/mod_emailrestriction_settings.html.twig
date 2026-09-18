@@ -1,0 +1,73 @@
+{% extends request.ajax ? 'layout_blank.html.twig' : 'layout_default.html.twig' %}
+
+{% block meta_title %}{{ 'Email Restriction Settings'|trans }}{% endblock %}
+
+{% set active_menu = 'system' %}
+
+{% block breadcrumbs %}
+    <ul class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="{{ '/'|url(area: 'admin') }}">
+                <svg class="icon">
+                    <use href="#home"/>
+                </svg>
+            </a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="{{ 'system'|url(area: 'admin') }}">{{ 'Settings'|trans }}</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">{{ 'Email Restriction Settings'|trans }}</li>
+    </ul>
+{% endblock %}
+
+{% block content %}
+    {% set params = admin.extension_config_get({ ext: 'mod_emailrestriction' }) %}
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <h3 class="card-title">{{ 'Email Restriction Settings'|trans }}</h3>
+                <p class="card-subtitle">{{ 'Control which email domains may be used when clients register or change their email address.'|trans }}</p>
+            </div>
+        </div>
+
+        <form method="post" action="{{ 'extension/config_save'|api_url(role: 'admin') }}" {{ fb_api_form({message: 'Configuration Updated'|trans}) }}>
+            <input type="hidden" name="ext" value="mod_emailrestriction">
+
+            <div class="card-body">
+                <div class="alert alert-info" role="alert">
+                    <strong class="me-1">{{ 'Information:'|trans }}</strong>{{ 'Add one domain per line. Lines starting with # are ignored. An empty list disables that list. When both lists are set, the whitelist is checked first and the blacklist second.'|trans }}
+                </div>
+
+                <div class="row row-cards">
+                    <div class="col-xl-6">
+                        <section class="card card-sm h-100">
+                            <div class="card-body">
+                                <h4 class="card-title mb-2">{{ 'Whitelist'|trans }}</h4>
+                                <p class="text-secondary">{{ 'Only email addresses from these domains are accepted. Leave empty to allow every domain.'|trans }}</p>
+                                <label class="form-label" for="whitelist">{{ 'Allowed domains'|trans }}</label>
+                                <textarea id="whitelist" class="form-control font-monospace" name="whitelist" rows="8" placeholder="example.com&#10;*.example.org">{{ params.whitelist|default('') }}</textarea>
+                                <small class="form-hint">{{ 'Use *.example.com to match any subdomain of example.com. Subdomains are not matched otherwise.'|trans }}</small>
+                            </div>
+                        </section>
+                    </div>
+
+                    <div class="col-xl-6">
+                        <section class="card card-sm h-100">
+                            <div class="card-body">
+                                <h4 class="card-title mb-2">{{ 'Blacklist'|trans }}</h4>
+                                <p class="text-secondary">{{ 'Email addresses from these domains are rejected. Leave empty to block no domain.'|trans }}</p>
+                                <label class="form-label" for="blacklist">{{ 'Blocked domains'|trans }}</label>
+                                <textarea id="blacklist" class="form-control font-monospace" name="blacklist" rows="8" placeholder="spam.example&#10;*.throwaway.test">{{ params.blacklist|default('') }}</textarea>
+                                <small class="form-hint">{{ 'Use *.example.com to match any subdomain of example.com. Subdomains are not matched otherwise.'|trans }}</small>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer text-end">
+                <button type="submit" class="btn btn-primary">{{ 'Update'|trans }}</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

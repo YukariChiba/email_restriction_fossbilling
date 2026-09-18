@@ -1,0 +1,77 @@
+name: Check FOSSBilling Compatibility
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  phpstan:
+    runs-on: ubuntu-latest
+
+    name: PHPStan - FOSSBilling Preview
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Checkout FOSSBilling
+        uses: actions/checkout@v6
+        with:
+          repository: "FOSSBilling/FOSSBilling"
+          path: "FOSSBilling"
+
+      - name: Install Composer Dependencies
+        uses: php-actions/composer@v6
+        with:
+          args: --working-dir=FOSSBilling
+          dev: no
+          php_version: 8.3
+          php_extensions: intl
+
+      - name: Run PHPStan
+        uses: php-actions/phpstan@v3
+        with:
+          version: latest
+          php_version: 8.3
+          configuration: phpstan.neon
+          memory_limit: 512M
+
+  phpstan-release:
+    runs-on: ubuntu-latest
+
+    name: PHPStan - FOSSBilling Release
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Get Latest FOSSBilling Release Tag
+        uses: oprypin/find-latest-tag@v1
+        with:
+          repository: "FOSSBilling/FOSSBilling"
+          releases-only: true
+        id: get_id
+
+      - name: Checkout Release tag
+        uses: actions/checkout@v6
+        with:
+          repository: "FOSSBilling/FOSSBilling"
+          path: "FOSSBilling"
+          ref: ${{ steps.get_id.outputs.tag }}
+
+      - name: Install Composer Dependencies
+        uses: php-actions/composer@v6
+        with:
+          args: --working-dir=FOSSBilling
+          dev: no
+          php_version: 8.3
+          php_extensions: intl
+
+      - name: Run PHPStan
+        uses: php-actions/phpstan@v3
+        with:
+          version: latest
+          php_version: 8.3
+          configuration: phpstan.neon
+          memory_limit: 512M

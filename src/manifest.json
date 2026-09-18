@@ -1,0 +1,12 @@
+{
+    "id": "emailrestriction",
+    "type": "mod",
+    "name": "Email Restriction",
+    "description": "Restricts client registration and email changes with domain whitelists and blacklists.",
+    "icon_url": "icon.svg",
+    "homepage_url": "https://ewe.moe",
+    "author": "Yukari Chiba",
+    "author_url": "https://ewe.moe",
+    "license": "Apache-2.0 - https://www.apache.org/licenses/LICENSE-2.0",
+    "version": "0.1.0"
+}
